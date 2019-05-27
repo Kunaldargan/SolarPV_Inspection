@@ -1,0 +1,5 @@
+# TODO
+* Make gamma correction into python code, 
+* Add to main pipeline
+
+g++ gamma-correction_directory.cpp -o gammaCorrection `pkg-config --cflags --libs opencv`
