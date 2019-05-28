@@ -12,6 +12,7 @@ import imutils
 
 
 def count_panel(path):
+    rotation = 0
     print(path)
     #pick images from directory and add to a array. Extract filename from directory and add them to a list
     cv_img = []
@@ -23,7 +24,7 @@ def count_panel(path):
         img_name.append(os.path.basename(img))
         print(os.path.basename(img))
     
-    #Itearate over images list for segmentation and counting. 
+    #Iterate over images list for segmentation and counting. 
 
     for j in range(0,(len(cv_img))):
 
@@ -31,8 +32,8 @@ def count_panel(path):
         rgbimg = cv_img[j].copy()
         stitchimg = cv_img[j].copy()
         #Morph_Open
-        kernel_3 = np.ones((11,11),np.uint8)
-        img = cv2.morphologyEx(cv_img[j], cv2.MORPH_OPEN, kernel_3)
+        kernel_opening = np.ones((11,11),np.uint8)
+        img = cv2.morphologyEx(cv_img[j], cv2.MORPH_OPEN, kernel_opening)
 
         #Convert image to single channel and change color colding to HSV
         hsv_img = cv2.cvtColor(cv_img[j], cv2.COLOR_BGR2HSV)
@@ -47,12 +48,12 @@ def count_panel(path):
         res = cv2.bitwise_and(cv_img[j],cv_img[j], mask= mask) 
 
         #Morph_Erode 
-        kernel = np.ones((7,7),np.uint8)
-        erosion = cv2.erode(res,kernel,iterations = 1)
+        kernel_erode = np.ones((7,7),np.uint8)
+        erosion = cv2.erode(res,kernel_erode,iterations = 1)
         
         #Morph_Dilate 
-        kernel2 = np.ones((31,31),np.uint8)
-        dilation = cv2.dilate(erosion,kernel2,iterations = 1)
+        kernel_dilate = np.ones((31,31),np.uint8)
+        dilation = cv2.dilate(erosion,kernel_dilate,iterations = 1)
 
         #Convert dilated image to single channel to threshold
         gray = cv2.cvtColor(dilation, cv2.COLOR_BGR2GRAY)
@@ -63,12 +64,12 @@ def count_panel(path):
         (thresh3, im_bw) = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
         #Morph_Erdoe
-        kernel_2 = np.ones((5,5),np.uint8)
-        erosion_2 = cv2.erode(im_bw,kernel_2,iterations = 2)
+        kernel_erode_2 = np.ones((5,5),np.uint8)
+        erosion_2 = cv2.erode(im_bw,kernel_erode_2,iterations = 2)
 
         #Morph_Dilate
-        kernel = np.ones((7,7),np.uint8)
-        dilation = cv2.dilate(rgbimg,kernel,iterations = 1)
+        kernel_dilate_2 = np.ones((7,7),np.uint8)
+        dilation = cv2.dilate(rgbimg,kernel_dilate_2,iterations = 1)
 
         #Impose the binary mask on the original image
         gray2 = cv2.cvtColor(dilation, cv2.COLOR_BGR2GRAY)
@@ -87,21 +88,23 @@ def count_panel(path):
             peri = cv2.arcLength(c, True)
             approx = cv2.approxPolyDP(c, 0.00001 * peri, True)
             #Add a bounding rectangle to the contours
-#            x,y,w,h = cv2.boundingRect(approx)
-#            #Use the height and width of the bounding box to remove unwanted boxes in the background
-#            if (20 < w < 90 and 20 < h < 90):
-#                cv2.rectangle(stitchimg,(x, y), (x+w, y+h), (0, 255, 0), 2)
-#                count+=1
+            if(rotation==0):
+                x,y,w,h = cv2.boundingRect(approx)
+            #Use the height and width of the bounding box to remove unwanted boxes in the background
+                if (20 < w < 90 and 20 < h < 90):
+                    cv2.rectangle(stitchimg,(x, y), (x+w, y+h), (0, 255, 0), 2)
+                    count+=1
             #Using minAreaRect to solve rotated rectangle issue
-            rect = cv2.minAreaRect(approx)
-            w, h = rect[1]
+            else:
+                rect = cv2.minAreaRect(approx)
+                w, h = rect[1]
 
-            if (15 < w < 90 and 15 < h < 90):
-                box = cv2.boxPoints(rect)
-                box = np.int0(box)
-                cv2.drawContours(stitchimg,[box],0,(0,255,0),2)
-                count+=1
-        print(count)
+                if (15 < w < 90 and 15 < h < 90):
+                    box = cv2.boxPoints(rect)
+                    box = np.int0(box)
+                    cv2.drawContours(stitchimg,[box],0,(0,255,0),2)
+                    count+=1
+                    print(count)
         output_dir = path + '/Output/'
         #Write the image in the path's output folder
         cv2.imwrite(output_dir +img_name[j],stitchimg)
