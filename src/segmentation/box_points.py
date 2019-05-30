@@ -3,13 +3,15 @@ import cv2
 import glob
 import numpy as np
 import os
+import json
 
 from imutils import contours
 from skimage import measure
 import imutils
 
 #cv2 to handle images, glob for directory, imutils for image processing, skimage measure for counting neighbors, 
-dict = []
+dict_dir = {}
+
 
 def count_panel(path):
     rotation = 0
@@ -28,6 +30,8 @@ def count_panel(path):
 
     for j in range(0,len(cv_img)):
 
+        points =[]
+        dict_img = {}
         img = cv_img[j].copy()
         rgbimg = cv_img[j].copy()
         stitchimg = cv_img[j].copy()
@@ -83,53 +87,48 @@ def count_panel(path):
 
         #Initialize the count variable to count the number of panels. 
         fname=os.path.splitext(img_name[j])[0]
-        output_dir_txt = path + '/Annotations_Panel/'
-        with open( output_dir_txt + fname + '.json', 'w+') as f:
-            
-            f.writelines("id:" + fname + '\n')
-            count=0
-            for c in contours2:
-                #Complete boxes to the contours which have created incomplete boxes.
-                peri = cv2.arcLength(c, True)
-                approx = cv2.approxPolyDP(c, 0.00001 * peri, True)
-                #Add a bounding rectangle to the contours
-                if(rotation==0):
-                    x,y,w,h = cv2.boundingRect(approx)
-                #Use the height and width of the bounding box to remove unwanted boxes in the background
-                    if (20 < w < 90 and 20 < h < 90):
-                        cv2.rectangle(stitchimg,(x, y), (x+w, y+h), (0, 255, 0), 2)
-    #                    p1= [x,y]
-    #                    p2= [x+w,y+w]
-    #                    p3=[x+w+h, y+w+h]
-    #                    p4=[x+h,y+h]
-    #                    count+=1
-                        f.writelines("Panel:" + '[' +str(x)+ ',' + str(y) + ',' + str(x+w) + ',' + str(y+h) + ']' + '\n')  
-                        
-                        
-                        print(x,y,w,h)
-                #Using minAreaRect to solve rotated rectangle issue
-                else:
-                    rect = cv2.minAreaRect(approx)
-                    x,y = rect[0]
-                    w, h = rect[1]
-                    p1= [x,y]
-                    p2= [x+w,y+w]
-                    p3=[x+w+h, y+w+h]
-                    p4=[x+h,y+h]
-    
-                    if (15 < w < 90 and 15 < h < 90):
-                        box = cv2.boxPoints(rect)
-                        box = np.int0(box)
-                        cv2.drawContours(stitchimg,[box],0,(0,255,0),2)
-    #                    print(box)
-    #                    count+=1
-    #                    print(count)
-        output_dir = path + '/Output_Coords/'
+        count=0
+        for c in contours2:
+            #Complete boxes to the contours which have created incomplete boxes.
+            peri = cv2.arcLength(c, True)
+            approx = cv2.approxPolyDP(c, 0.00001 * peri, True)
+            #Add a bounding rectangle to the contours
+            if(rotation==0):
+                x,y,w,h = cv2.boundingRect(approx)
+            #Use the height and width of the bounding box to remove unwanted boxes in the background
+                if (20 < w < 90 and 20 < h < 90):
+                    cv2.rectangle(stitchimg,(x, y), (x+w, y+h), (0, 255, 0), 2)
+                    count+=1
+                points.append((x,y,x+w,y+h))
+            else:
+                rect = cv2.minAreaRect(approx)
+                if (15 < w < 90 and 15 < h < 90):
+                    box = cv2.boxPoints(rect)
+                    box = np.int0(box)
+                    cv2.drawContours(stitchimg,[box],0,(0,255,0),2)
+
+        output_dir = path + '/Output2/'
         #Write the image in the path's output folder
         cv2.imwrite(output_dir +img_name[j],stitchimg)
+        #points_img contains img of cuurent img. count.
 
-    return dict
-#Call to path function 
-
+        dict_img['Count'] = count
+        dict_img['Points'] = points
+        dict_dir[fname] = dict_img
         
-box2=count_panel('/home/sameer/Galactica_Solar/Solar_Inspection/Images/RGB')
+        
+        
+        
+    return dict_dir
+       
+dict1 = {}        
+dict_1 =count_panel('/home/sameer/Galactica_Solar/Solar_Inspection/Images/RGB')
+
+
+
+with open('Exif2.json', 'w') as f:
+            
+#    json.dump(x,f)
+    json.dump(dict_1,f, indent=4, sort_keys = True)
+
+
