@@ -28,8 +28,6 @@ def hotpatch(path):
         n= cv2.imread(img)
         cv_img.append(n)
         img_name.append(os.path.basename(img))
-        print(os.path.basename(img))
- 
 
     for j in range(0,len(cv_img)):
         #Convert image to sngle channel image
@@ -88,12 +86,8 @@ def hotpatch(path):
                 cv2.putText(cv_img[j], "String Fault", (x, y),cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 0, 0), 2)
                 c=hull.tolist()
                 string_points.append(c)
-        #Directory where the image containing Hotpatches will be stored
-#        print('Area count ' + str(count1))
-#        print('Hull count ' + str(count2))
-#        output_dir = path + '/Hotpatches/'
-#        cv2.imwrite(output_dir +img_name[j],cv_img[j])
-#        
+        output_dir = path + '/Hotpatches/'
+        cv2.imwrite(output_dir +img_name[j],cv_img[j])
         dict_dir[fname] = dict_img
         dict_img['Diode'] = diode_points  
         dict_img['String'] = string_points
@@ -101,7 +95,7 @@ def hotpatch(path):
     return dict_dir
         
 dict_1 = {}        
-#dict_1 = hotpatch('/home/sameer/Galactica_Solar/Solar_Inspection/Images/IR')
+
 
 dict_1 = hotpatch('/home/sameer/Galactica_Solar/Solar_Inspection/Images/Lapeer Images/Lapeer 5')
 
