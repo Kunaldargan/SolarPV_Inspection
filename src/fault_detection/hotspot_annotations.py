@@ -20,17 +20,17 @@ def hotspot(path):
     #pick images from directory and add to a array. Extract filename from directory and add them to a list
     cv_img = []
     img_name = []
-    dict_img = {}
     files = [item for sublist in [glob.glob(path + ext) for ext in ["/*.jpg", "/*.JPG", "/*.png", "/*.PNG"]] for item in sublist]
     for img in files:
         n= cv2.imread(img)
         cv_img.append(n)
         img_name.append(os.path.basename(img))
-        print(os.path.basename(img))
- 
+
     #Iterate over images
     for j in range(0,len(cv_img)):
         
+        dict_img = {}
+
         points = []
         #Convert image to single channel
         gray = cv2.cvtColor(cv_img[j], cv2.COLOR_BGR2GRAY)
