@@ -46,7 +46,7 @@ def count_panel(path):
         #Morph_Open
         kernel_opening = np.ones((17,17),np.uint8)
         img = cv2.morphologyEx(cv_img[j], cv2.MORPH_OPEN, kernel_opening)
-        cv2.imwrite('1_Opening.jpg',img)
+#        cv2.imwrite('1_Opening.jpg',img)
 
         #Convert image to single channel and change color colding to HSV
         hsv_img = cv2.cvtColor(cv_img[j], cv2.COLOR_BGR2HSV)
@@ -55,20 +55,20 @@ def count_panel(path):
         COLOR_MIN = np.array([110,50,50],np.uint8)  
         COLOR_MAX = np.array([130,255,255],np.uint8)
         frame_threshed = cv2.inRange(hsv_img, COLOR_MIN, COLOR_MAX)
-        cv2.imwrite('2_frame_threshed.jpg',frame_threshed)
+#        cv2.imwrite('2_frame_threshed.jpg',frame_threshed)
         
         #apply mask to the binary image o view panels.
         mask = frame_threshed
         res = cv2.bitwise_and(cv_img[j],cv_img[j], mask= mask) 
-        cv2.imwrite('3_res.jpg',res)
+#        cv2.imwrite('3_res.jpg',res)
         #Morph_Erode 
         kernel_erode = np.ones((3,3),np.uint8)
         erosion = cv2.erode(res,kernel_erode,iterations = 1)
-        cv2.imwrite('4_erosion.jpg',erosion)
+#        cv2.imwrite('4_erosion.jpg',erosion)
         #Morph_Dilate 
         kernel_dilate = np.ones((31,31),np.uint8)
         dilation = cv2.dilate(erosion,kernel_dilate,iterations = 1)
-        cv2.imwrite('5_dilation.jpg',dilation)
+#        cv2.imwrite('5_dilation.jpg',dilation)
         #Convert dilated image to single channel to threshold
         gray = cv2.cvtColor(dilation, cv2.COLOR_BGR2GRAY)
 
@@ -76,38 +76,38 @@ def count_panel(path):
 
         #threshold the image and obtain the binary image
         (thresh3, im_bw) = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-        cv2.imwrite('6_im_bw.jpg',im_bw)
+#        cv2.imwrite('6_im_bw.jpg',im_bw)
         #Morph_Erdoe
         kernel_erode_2 = np.ones((5,5),np.uint8)
         erosion_2 = cv2.erode(im_bw,kernel_erode_2,iterations = 2)
-        cv2.imwrite('7_erosion_2.jpg',erosion_2)
+#        cv2.imwrite('7_erosion_2.jpg',erosion_2)
         #Morph_Dilate
         kernel_dilate_2 = np.ones((7,7),np.uint8)
         dilation = cv2.dilate(rgbimg,kernel_dilate_2,iterations = 1)
-        cv2.imwrite('8_dilation_2.jpg',dilation)
+#        cv2.imwrite('8_dilation_2.jpg',dilation)
         
         #Impose the binary mask on the original image
         gray2 = cv2.cvtColor(dilation, cv2.COLOR_BGR2GRAY)
         new = erosion_2 * gray2
-        cv2.imwrite('9_new.jpg',new)
+#        cv2.imwrite('9_new.jpg',new)
         #apply canny to new
         edges = cv2.Canny(new,100,250)
-        cv2.imwrite('canny.jpg',edges)
+#        cv2.imwrite('canny.jpg',edges)
         
         kernel_closing_5 = np.ones((5,5),np.uint8)
 
         morph_closing = cv2.morphologyEx(new, cv2.MORPH_CLOSE, kernel_closing_5)
-        cv2.imwrite('Morph_CLose.jpg',morph_closing)
+#        cv2.imwrite('Morph_CLose.jpg',morph_closing)
         
         #Grdaient try 
         kernel_gradient = np.ones((3,3),np.uint8)
         gradient = cv2.morphologyEx(edges, cv2.MORPH_GRADIENT, kernel_gradient)
-        cv2.imwrite('gradient.jpg',gradient)
+#        cv2.imwrite('gradient.jpg',gradient)
 
         #Threshold the image 
         ret, thresh3 = cv2.threshold(new,
                         127, 255, cv2.THRESH_BINARY)
-        cv2.imwrite('10_thresh3.jpg',thresh3)
+#        cv2.imwrite('10_thresh3.jpg',thresh3)
         #Contours application to the image containing panels only. 
         contours2,hierachy,=cv2.findContours(gradient,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
@@ -137,9 +137,9 @@ def count_panel(path):
                     cv2.drawContours(stitchimg,[box],0,(0,255,0),3)
                     count+=1
                 
-        output_dir = path + '/Output2/'
+        output_dir = path + '/Output/'
         #Write the image in the path's output folder
-        cv2.imwrite('Count.jpg',stitchimg)
+        cv2.imwrite(output_dir+img_name[j],cv_img[j])
         #points_img contains img of cuurent img. count.
 
         dict_img['Count'] = count
