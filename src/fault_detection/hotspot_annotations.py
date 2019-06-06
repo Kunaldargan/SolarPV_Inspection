@@ -37,7 +37,7 @@ def hotspot(path):
         #Blur image to reduce noise 
         blurred = cv2.GaussianBlur(gray, (3,3), 0)
         #Threshold the image over a set of values
-        thresh = cv2.threshold(blurred, 210, 255, cv2.THRESH_BINARY)[1]
+        thresh = cv2.threshold(blurred, 230, 255, cv2.THRESH_BINARY)[1]
         
         #From the thresholded image pick only blobs which have specified neighbors.
         labels = measure.label(thresh, neighbors=4, background=0)
@@ -65,7 +65,7 @@ def hotspot(path):
             (x, y, w, h) = cv2.boundingRect(c)
             ((cX, cY), radius) = cv2.minEnclosingCircle(c)
             #assumption that hostpots are not bigger than 10. If bigger they will be classified as Hotpatch. 
-            if (radius > 1  and radius <10) :
+            if (radius > 1  and radius <5) :
                 cv2.circle(cv_img[j], (int(cX), int(cY)), int(radius+10),(0, 255, 0), 2)
 #                cv2.putText(cv_img[j], "#{}".format(i + 1), (x+20, y - 15),cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
                 points.append((cX,cY,radius))
