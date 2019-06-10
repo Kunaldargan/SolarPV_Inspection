@@ -1,0 +1,31 @@
+{
+	"00000": {
+		"Source_File": "path/to/source/image",
+		"EXIF": {
+			"Dictionary": "Containing EXIF Data"
+		},
+		"Analysis": {
+			"Segmentation": {
+				"1": ["List Containing Segm"]
+			},
+			"Panel": {
+				"Count": 123,
+				"Location": [],
+				"Order": []
+			},
+			"Faults": {
+				"Hot_Patch": {
+					"1": []
+				},
+				"String": {
+					"1": []
+				},
+				"Hot_Patch_multi": {
+					"1": []
+				}
+
+			}
+		}
+
+	}
+}
