@@ -5,7 +5,7 @@ import os
 
 class stitch:
 	"""
-	call as 
+	call as
 		panaroma = stitch(path)
 		returns stitched image
 
@@ -16,12 +16,12 @@ class stitch:
 
 
 
-	#Code which stitches 
+	#Code which stitches
 
 	# Use the keypoints to stitch the images
 	def get_stitched_image(img1, img2, M):
 
-		# Get width and height of input images    
+		# Get width and height of input images
 		w1,h1 = img1.shape[:2]
 		w2,h2 = img2.shape[:2]
 
@@ -40,17 +40,17 @@ class stitch:
 		# Calculate dimensions of match points
 		[x_min, y_min] = np.int32(result_dims.min(axis=0).ravel() - 0.5)
 		[x_max, y_max] = np.int32(result_dims.max(axis=0).ravel() + 0.5)
-		
-		# Create output array after affine transformation 
+
+		# Create output array after affine transformation
 		transform_dist = [-x_min,-y_min]
-		transform_array = np.array([[1, 0, transform_dist[0]], 
-									[0, 1, transform_dist[1]], 
-									[0,0,1]]) 
+		transform_array = np.array([[1, 0, transform_dist[0]],
+									[0, 1, transform_dist[1]],
+									[0,0,1]])
 
 		# Warp images to get the resulting image
-		result_img = cv2.warpPerspective(img2, transform_array.dot(M), 
+		result_img = cv2.warpPerspective(img2, transform_array.dot(M),
 										(x_max-x_min, y_max-y_min))
-		result_img[transform_dist[1]:w1+transform_dist[1], 
+		result_img[transform_dist[1]:w1+transform_dist[1],
 					transform_dist[0]:h1+transform_dist[0]] = img1
 
 		# Return the result
@@ -59,22 +59,22 @@ class stitch:
 	# Find SIFT and return Homography Matrix
 	def get_sift_homography(img1, img2):
 
-	 
+
 		sift = cv2.xfeatures2d.SURF_create()
 
 		# Extract keypoints and descriptors
 		k1, d1 = sift.detectAndCompute(img1, None)
 		k2, d2 = sift.detectAndCompute(img2, None)
-		
-			
+
+
 	#    l1,e1 =  surf.detectAndCompute(img1, None)
 	#    l2,e2 =  surf.detectAndCompute(img2, None)
 
-	#    
+	#
 	#    # Bruteforce matcher on the descriptors
 	#    bf = cv2.BFMatcher()
 	#    matches = bf.knnMatch(d1,d2, k=2)
-		
+
 		FLANN_INDEX_KDTREE = 0
 		index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
 		search_params = dict(checks=50)   # or pass empty dictionary
@@ -94,7 +94,7 @@ class stitch:
 		# Mimnum number of matches
 		min_matches = 8
 		if len(verified_matches) > min_matches:
-			
+
 			# Array to store matching points
 			img1_pts = []
 			img2_pts = []
@@ -105,7 +105,7 @@ class stitch:
 				img2_pts.append(k2[match.trainIdx].pt)
 			img1_pts = np.float32(img1_pts).reshape(-1,1,2)
 			img2_pts = np.float32(img2_pts).reshape(-1,1,2)
-			
+
 			# Compute homography matrix
 			M, mask = cv2.findHomography(img1_pts, img2_pts, cv2.RANSAC, 5.0)
 			return M
@@ -120,46 +120,44 @@ class stitch:
 		img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
 		return img
 
-	###start iteraation 
-		
+	###start iteraation
+
 	def stitcher(path):
 		#Pick all images from the folder
 		cv_img = []
 		img_name = []
 
 		files = [item for sublist in [glob.glob(path + ext) for ext in ["/*.jpg", "/*.JPG", "/*.png", "/*.PNG"]] for item in sublist]
-		
+
 		for img in files:
 			n= cv2.imread(img)
 			cv_img.append(n)
 			img_name.append(os.path.basename(img))
-			print(os.path.basename(img))
 
 		i=imutils.resize(cv_img[0], width=1920)
 		img1= i
 		for i in range(1,len(cv_img)):
-		
-		
+
+
 			img2 = imutils.resize(cv_img[i], width=1920)
-			
-			
+
+
 			img1 = equalize_histogram_color(img1)
 			img2 = equalize_histogram_color(img2)
-			
+
 			# Show input images
 			#input_images = np.hstack( (img1, img2) )
 			#cv2.imshow ('Input Images', input_images)
-			
+
 			# Use SIFT to find keypoints and return homography matrix
 			M =  get_sift_homography(img1, img2)
-			
+
 			# Stitch the images together using homography matrix
 			result_image = get_stitched_image(img2, img1, M)
-			
+
 			# Write the result to the same directory
 			#    result_image_name = 'results/result_'+sys.argv[1]
 			#cv2.imwrite(str(i) + 'output.jpg',result_image)
 			result_image = imutils.resize(result_image, width=1920)
 			img1=result_image
 		return img1
-			

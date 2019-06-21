@@ -1,0 +1,9 @@
+{
+  "unet_segmentation" : {
+      "Multi_model_path" : "/home/galactica/Galactica/External/tf_unet/Unet_zixhuao/Backup/Solar/COM_400x400/solar_15_0.89.h5",
+      "gray_model_path" :"/home/galactica/Galactica/External/tf_unet/Unet_zixhuao/Backup/Solar/Gray_400x400/solar_09_0.93.h5",
+      "rgb_model_path" : "/home/galactica/Galactica/External/tf_unet/Unet_zixhuao/Backup/Solar/RGB_400x400/solar_20_0.95.h5",
+      "width":400,
+      "height":400,
+  }
+}
