@@ -5,6 +5,6 @@
       "rgb_model_path" : "/home/galactica/Galactica/External/tf_unet/Unet_zixhuao/Backup/Solar/RGB_400x400/solar_20_0.95.h5",
       "width":400,
       "height":400,
-      "channels":1
+      "channels":3
   }
 }
