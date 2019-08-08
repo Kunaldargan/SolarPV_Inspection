@@ -17,9 +17,14 @@ cv_img = []
 cv_img_2 = []
 img_name = []
 
+#path to segmented masks
+pathname1= './Combined'
 
-pathname1= '/home/sameer/Galactica_Solar/Lapeer_Faults/Combined'
-pathname2 = '/home/sameer/Galactica_Solar/Lapeer_Faults/Images'
+#path to original Images
+pathname2 = './Images'
+
+#output folder of faults
+output_path_h = './Fault_Annotations/'
 
 matches = 0 
 count = 0
@@ -47,7 +52,7 @@ for item1 in sorted(os.listdir(pathname1)):
 
 #assign output variable 
 
-output_path_h = '/home/sameer/Galactica_Solar/Lapeer_Faults/Output/'
+
 
 for j in range(0,len(cv_img)):
     #Convert image to sngle channel image
