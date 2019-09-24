@@ -5,6 +5,7 @@ import os
 from skimage import measure
 import imutils
 from .Unet import Unet
+from .IR_Segmentation import *
 import numpy as np
 
 class Segmentation_mask:
@@ -25,7 +26,7 @@ class Segmentation_mask:
 
 		self.unet = Unet(model_type, settings) #shared model RGB
 
-	def unet_segmentation(self, data=[]):
+	def unet_segmentation(self, data=[], resize = True, scale = True):
 		# Call segmentation model get mask_list as return
 		self.img_list = []
 		if type(data) == list:
@@ -35,7 +36,7 @@ class Segmentation_mask:
 		else :
 			assert False, ('Wrong type of input')
 
-		ret = self.unet.predict(self.img_list);
+		ret = self.unet.predict(self.img_list, resize, scale);
 		masks = []
 		for mask in ret:
 			mask = mask *255;
@@ -50,6 +51,24 @@ class Segmentation_mask:
 		if(x%2==0):
 			x=x-1
 		return x
+
+
+	def IR_segmentation(data):
+		self.img_list = []
+		if type(data) == list:
+			self.img_list = data
+		elif type(data) == numpy.ndarray:
+			self.img_list.append(data)
+		else :
+			assert False, ('Wrong type of input')
+
+		masks = []
+
+		for img in self.img_list:
+			mask = segment(img)
+			masks.append(mask)
+		return masks;
+
 
 	def color_segmentation(self, data, img_type="Unet"):
 		# use metadata to check whether image is RGB or not
@@ -143,3 +162,7 @@ class Segmentation_mask:
 			masks.append(im_bw)
 
 		return masks
+
+	def reset(self):
+		#Reset Keras model and free up memory
+		self.unet.reset_keras();

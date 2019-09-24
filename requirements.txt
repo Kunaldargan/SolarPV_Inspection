@@ -1,5 +1,11 @@
 imutils==0.5.2
 opencv_python==4.1.0.25
 numpy==1.16.3
-Django==2.2.1
+Django==1.11
+django-rest-framework
+keras
+tensorflow-gpu
+yolo34py-gpu
 scikit-image
+pandas
+tqdm

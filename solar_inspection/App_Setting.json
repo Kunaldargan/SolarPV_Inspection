@@ -1,10 +1,30 @@
 {
-  "unet_segmentation" : {
-      "Multi_model_path" : "/home/galactica/Galactica/External/tf_unet/Unet_zixhuao/Backup/Solar/COM_400x400/solar_15_0.89.h5",
-      "gray_model_path" :"/home/galactica/Galactica/External/tf_unet/Unet_zixhuao/Backup/Solar/IR_400x400/solar_15_0.88.h5",
-      "rgb_model_path" : "/home/galactica/Galactica/External/tf_unet/Unet_zixhuao/Backup/Solar/RGB_400x400/solar_20_0.95.h5",
-      "width":400,
-      "height":400,
-      "channels":3
+  "Segmentation":{
+    "Mode" : "DNN" ,
+    "unet_segmentation" : {
+        "Multi_model_path" : "/home/galactica/Galactica/External/tf_unet/Unet_zixhuao/Backup/Solar/COM_400x400/solar_15_0.89.h5",
+        "ir_model_path" :"/home/galactica/Galactica/External/tf_unet/Unet_zixhuao/Backup/Solar/resnet34_backone_full_data/06-0.99_model.h5",
+        "rgb_model_path" : "/home/galactica/Galactica/External/tf_unet/Unet_zixhuao/Backup/Solar/RGB_400x400/solar_20_0.95.h5",
+        "width":256,
+        "height":256,
+        "channels":3
+    },
+    "image_processing": {
+
+    }
+  },
+
+  "yolo_fault_detection" : {
+      "config" : "/home/galactica/Galactica/External/darknet_alexyab/solar_fault_classes/yolov3-solar-faults.cfg",
+      "weights" :"/home/galactica/Galactica/External/darknet_alexyab/solar_fault_classes/backup/yolov3-solar-faults_14000.weights",
+      "names_file" : "/home/galactica/Galactica/External/darknet_alexyab/solar_fault_classes/solar_fault_classes.names",
+      "data_file" : "/home/galactica/Galactica/External/darknet_alexyab/solar_fault_classes/solar_fault_classes.data",
+      "detection_conf":0.2,
+      "darknet_path": "/home/galactica/Galactica/External/darknet_alexyab"
+  },
+
+  "image_tools" : {
+    "cutoff_percentage":2,
+    "media_path" : "/home/galactica/Galactica/Production/galactica_solar_inspection/solar_inspection/media/"
   }
 }
